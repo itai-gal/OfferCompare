@@ -1,11 +1,10 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import morgan from "morgan";
+import authRoutes from "./routes/auth.routes";
 
 export function createApp() {
     const app = express();
-
-    const PORT = 5000; // just for reference, not used here
 
     // Basic middlewares
     app.use(express.json());
@@ -17,24 +16,23 @@ export function createApp() {
     );
     app.use(morgan("dev"));
 
-    // Health check endpoint
+    // Health check
     app.get("/api/health", (_req: Request, res: Response) => {
         res.json({ status: "ok", service: "CompareOffer API (basic)" });
     });
 
-    // app.use("/api/auth", authRoutes);
-    // app.use("/api/offers", offersRoutes);
-    // app.use("/api/admin", adminRoutes);
+    // Auth routes (register, login, me)
+    app.use("/api/auth", authRoutes);
 
-    // for every undefined route under /api
+    // 404 handler for unknown /api routes
     app.use("/api", (_req: Request, res: Response) => {
         res.status(404).json({ message: "Route not found" });
     });
 
-    // general error handler
+    // Global error handler
     app.use(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (err: any, _req: Request, res: Response, _next: any) => {
+        (err: any, _req: Request, res: Response, _next: NextFunction) => {
             console.error(err);
             res.status(err.status || 500).json({
                 message: err.message || "Internal server error",

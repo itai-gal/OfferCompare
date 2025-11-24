@@ -1,0 +1,38 @@
+import { Request, Response, NextFunction } from "express";
+
+export const validateRegister = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    // Later we will use Joi schema here.
+    // For now we only check that email and password exist.
+
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({
+            message: "Email and password are required",
+        });
+    }
+
+    next();
+};
+
+export const validateLogin = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    // Later we will use Joi schema here as well.
+
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({
+            message: "Email and password are required",
+        });
+    }
+
+    next();
+};
