@@ -13,6 +13,3 @@ dist/
 Thumbs.db
 
 .cache/
-
-.package.json
-.package-lock.json
