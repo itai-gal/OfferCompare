@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import authRoutes from "./routes/auth.routes";
+import offerRoutes from "./routes/offer.routes";
 
 export function createApp() {
     const app = express();
@@ -23,6 +24,9 @@ export function createApp() {
 
     // Auth routes (register, login, me)
     app.use("/api/auth", authRoutes);
+
+    // Offer routes
+    app.use("/api/offers", offerRoutes);
 
     // 404 handler for unknown /api routes
     app.use("/api", (_req: Request, res: Response) => {
