@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 type DemoOffer = {
     company: string;
@@ -12,21 +14,21 @@ const demoOffers: DemoOffer[] = [
     {
         company: "CloudWorks",
         title: "Junior DevOps Engineer",
-        salary: "₪19,000",
+        salary: "₪14,000",
         location: "Tel Aviv",
         workMode: "hybrid",
     },
     {
         company: "FinTech Labs",
-        title: "Backend Node.js Developer",
-        salary: "₪21,500",
+        title: "Backend Developer",
+        salary: "₪12,000",
         location: "Ramat Gan",
         workMode: "onsite",
     },
     {
         company: "VisionX",
         title: "Frontend React Developer",
-        salary: "₪18,500",
+        salary: "₪11,500",
         location: "Remote (IL)",
         workMode: "remote",
     },
@@ -47,13 +49,33 @@ function getWorkModeLabel(mode: DemoOffer["workMode"]) {
 
 const HomePage = () => {
     const navigate = useNavigate();
+    const { user, token } = useAuth();
+    const isLoggedIn = !!(user || token);
+
+    const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
     const handleGetStarted = () => {
+        if (!isLoggedIn) {
+            setShowAuthPrompt(true);
+            return;
+        }
         navigate("/compare");
     };
 
     const handleAddOffer = () => {
+        if (!isLoggedIn) {
+            setShowAuthPrompt(true);
+            return;
+        }
         navigate("/offers/new");
+    };
+
+    const handleGoLogin = () => {
+        navigate("/login");
+    };
+
+    const handleGoRegister = () => {
+        navigate("/register");
     };
 
     return (
@@ -66,7 +88,7 @@ const HomePage = () => {
         >
             {/* hero */}
             <section style={{ marginBottom: "2rem" }}>
-                <h1 style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>
+                <h1 style={{ fontSize: "2rem", marginBottom: "0.9rem" }}>
                     Compare your job offers with a clear head
                 </h1>
                 <p
@@ -75,13 +97,14 @@ const HomePage = () => {
                         color: "#4b5563",
                         maxWidth: 600,
                         lineHeight: 1.5,
+                        marginBottom: "1.2rem",
                     }}
                 >
                     Keep all your offers in one place, see them side by side, and get a
                     simple view that helps you choose your next role with confidence.
                 </p>
 
-                <div style={{ marginTop: "1.2rem", display: "flex", gap: "0.75rem" }}>
+                <div style={{ display: "flex", gap: "0.75rem" }}>
                     <button
                         type="button"
                         onClick={handleGetStarted}
@@ -116,6 +139,69 @@ const HomePage = () => {
                     </button>
                 </div>
             </section>
+
+            {/* auth prompt when not logged in */}
+            {showAuthPrompt && !isLoggedIn && (
+                <section style={{ marginBottom: "2rem" }}>
+                    <div
+                        style={{
+                            borderRadius: 10,
+                            border: "1px solid #e5e7eb",
+                            padding: "1rem 1.1rem",
+                            backgroundColor: "#ffffff",
+                            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+                        }}
+                    >
+                        <h2 style={{ fontSize: "1.1rem", marginBottom: "0.4rem" }}>
+                            To start comparing, please log in or create an account
+                        </h2>
+                        <p
+                            style={{
+                                fontSize: "0.9rem",
+                                color: "#6b7280",
+                                marginBottom: "0.8rem",
+                                maxWidth: 520,
+                            }}
+                        >
+                            You need an account so we can save your offers securely and show
+                            them only to you.
+                        </p>
+                        <div style={{ display: "flex", gap: "0.75rem" }}>
+                            <button
+                                type="button"
+                                onClick={handleGoLogin}
+                                style={{
+                                    padding: "0.55rem 1.2rem",
+                                    borderRadius: 999,
+                                    border: "1px solid #d1d5db",
+                                    backgroundColor: "#ffffff",
+                                    color: "#111827",
+                                    cursor: "pointer",
+                                    fontSize: "0.9rem",
+                                }}
+                            >
+                                Login
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleGoRegister}
+                                style={{
+                                    padding: "0.55rem 1.2rem",
+                                    borderRadius: 999,
+                                    border: "none",
+                                    backgroundColor: "#3b82f6",
+                                    color: "#ffffff",
+                                    cursor: "pointer",
+                                    fontSize: "0.9rem",
+                                    fontWeight: 500,
+                                }}
+                            >
+                                Sign up
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* demo section */}
             <section>
@@ -188,7 +274,9 @@ const HomePage = () => {
                                 <dd style={{ margin: 0 }}>{offer.location}</dd>
 
                                 <dt>Work mode</dt>
-                                <dd style={{ margin: 0 }}>{getWorkModeLabel(offer.workMode)}</dd>
+                                <dd style={{ margin: 0 }}>
+                                    {getWorkModeLabel(offer.workMode)}
+                                </dd>
                             </dl>
                         </article>
                     ))}
