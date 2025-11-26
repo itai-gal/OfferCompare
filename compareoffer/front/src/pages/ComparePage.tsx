@@ -1,271 +1,405 @@
 import { useEffect, useMemo, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { getMyOffers } from "../services/offerService";
-import BestOfferSummary from "../components/BestOfferSummary";
 import { useNavigate } from "react-router-dom";
+import { getMyOffers } from "../services/offerService";
 import type { Offer } from "../types";
-import type { ChangeEvent } from "react";
+import { useAuth } from "../context/AuthContext";
+import BestOfferSummary from "../components/BestOfferSummary";
+
+type ScoreWeights = {
+    salary: number;
+    workMode: number;
+    location: number;
+};
+
+const defaultWeights: ScoreWeights = {
+    salary: 0.6,
+    workMode: 0.25,
+    location: 0.15,
+};
+
+function normalizeSalary(salary: number | undefined): number {
+    if (!salary || salary <= 0) return 0;
+    const cap = 40000;
+    const value = Math.min(salary, cap);
+    return value / cap;
+}
+
+function scoreWorkMode(workMode: Offer["workMode"]): number {
+    if (workMode === "remote") return 1;
+    if (workMode === "hybrid") return 0.7;
+    return 0.4;
+}
+
+function scoreLocation(location?: string): number {
+    if (!location) return 0.4;
+    const lower = location.toLowerCase();
+    if (lower.includes("tel aviv")) return 1;
+    if (lower.includes("center")) return 0.8;
+    if (lower.includes("north") || lower.includes("south")) return 0.6;
+    return 0.5;
+}
 
 const ComparePage = () => {
-    const { token, loading: authLoading } = useAuth();
+    const navigate = useNavigate();
+    const { token } = useAuth();
+
     const [offers, setOffers] = useState<Offer[]>([]);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [weights, setWeights] = useState<ScoreWeights>(defaultWeights);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const navigate = useNavigate();
-
     useEffect(() => {
-        if (!token) {
-            setLoading(false);
-            return;
-        }
+        if (!token) return;
+        setLoading(true);
+        setError(null);
 
         getMyOffers(token)
             .then((data) => {
                 setOffers(data);
                 setSelectedIds(data.slice(0, 3).map((o) => o.id));
             })
-            .catch((err: any) => {
-                setError(err?.message || "Failed to load offers for comparison.");
+            .catch(() => {
+                setError("Something went wrong while loading your data.");
             })
             .finally(() => {
                 setLoading(false);
             });
     }, [token]);
 
-    const handleToggle = (e: ChangeEvent<HTMLInputElement>, id: string) => {
-        const { checked } = e.target;
-        setSelectedIds((prev) =>
-            checked ? [...prev, id] : prev.filter((x) => x !== id)
-        );
-    };
-
     const selectedOffers = useMemo(
         () => offers.filter((o) => selectedIds.includes(o.id)),
         [offers, selectedIds]
     );
 
-    const computeScore = (offer: Offer): number => {
-        let score = 0;
+    function computeScore(offer: Offer): number {
+        const salaryScore = normalizeSalary(offer.salary);
+        const workModeScore = scoreWorkMode(offer.workMode);
+        const locationScore = scoreLocation(offer.location);
 
-        if (offer.salary) {
-            score += offer.salary / 1000;
-        }
+        return (
+            salaryScore * weights.salary +
+            workModeScore * weights.workMode +
+            locationScore * weights.location
+        );
+    }
 
-        if (offer.workMode === "remote") score += 10;
-        if (offer.workMode === "hybrid") score += 6;
+    function handleToggle(
+        e: React.ChangeEvent<HTMLInputElement>,
+        offerId: string
+    ) {
+        const checked = e.target.checked;
+        setSelectedIds((prev) =>
+            checked ? [...prev, offerId] : prev.filter((id) => id !== offerId)
+        );
+    }
 
-        if (offer.notes && offer.notes.length > 0) score += 2;
-
-        return Math.round(score * 10) / 10;
+    const handleResetWeights = () => {
+        setWeights(defaultWeights);
     };
 
-    if (authLoading) {
-        return <p>Loading...</p>;
-    }
+    const handleGoToAddOffer = () => {
+        navigate("/offers/new");
+    };
 
     if (!token) {
-        return <p>You must be logged in to compare offers.</p>;
+        return (
+            <div style={{ maxWidth: 800, margin: "2rem auto", padding: "1rem" }}>
+                <h1>Compare your offers</h1>
+                <p>Please log in to compare your offers.</p>
+            </div>
+        );
     }
 
-    return (
-        <section style={{ maxWidth: 1000, margin: "0 auto" }}>
-            <header style={{ marginBottom: "1.5rem" }}>
-                <h1>Compare your offers</h1>
-                <p style={{ margin: 0, fontSize: "0.9rem", color: "#4b5563" }}>
-                    Select the offers you want to compare and see a clear side-by-side
-                    overview, including a simple score for each one.
-                </p>
-            </header>
+    const hasOffers = offers.length > 0;
 
-            {error && (
-                <div
+    return (
+        <div style={{ maxWidth: 1000, margin: "2rem auto", padding: "1rem" }}>
+            {/* header row */}
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: "1rem",
+                    alignItems: "center",
+                    marginBottom: "1.5rem",
+                }}
+            >
+                <div>
+                    <h1 style={{ marginBottom: hasOffers ? "0.4rem" : 0 }}>
+                        Compare your offers
+                    </h1>
+
+                    {/* show subtitle only when there are offers */}
+                    {!loading && !error && hasOffers && (
+                        <p style={{ color: "#4b5563", fontSize: "0.95rem" }}>
+                            Select the offers you want to compare and see which one fits you
+                            best.
+                        </p>
+                    )}
+                </div>
+
+                <button
+                    type="button"
+                    onClick={handleGoToAddOffer}
                     style={{
-                        marginBottom: "1rem",
-                        padding: "0.5rem 0.75rem",
-                        borderRadius: 4,
-                        backgroundColor: "#fee2e2",
-                        color: "#991b1b",
-                        fontSize: "0.85rem",
+                        padding: "0.6rem 1.2rem",
+                        borderRadius: 999,
+                        border: "none",
+                        background: "#3b82f6",
+                        color: "#ffffff",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        fontSize: "0.9rem",
+                        whiteSpace: "nowrap",
                     }}
                 >
+                    + Add a new offer
+                </button>
+            </div>
+
+            {/* tip – only if there are offers */}
+            {!loading && !error && hasOffers && (
+                <div
+                    style={{
+                        padding: "0.75rem 1rem",
+                        borderRadius: 8,
+                        backgroundColor: "#eff6ff",
+                        border: "1px solid #bfdbfe",
+                        fontSize: "0.9rem",
+                        marginBottom: "1.25rem",
+                    }}
+                >
+                    <strong>Tip:</strong> Focus on the offers you are seriously
+                    considering. You can always add or remove offers later.
+                </div>
+            )}
+
+            {/* error – רק אם באמת יש כשל תקשורת, בלי קשר למצב של offers */}
+            {!loading && error && (
+                <p style={{ color: "red", marginBottom: "1rem", fontSize: "0.9rem" }}>
                     {error}
-                </div>
+                </p>
             )}
 
-            {loading && <p>Loading offers…</p>}
+            {loading && <p>Loading your offers...</p>}
 
-            {!loading && offers.length === 0 && (
-                <div>
-                    <p>
-                        You don't have any offers yet. Start by adding an offer, then come
-                        back here to compare them.
-                    </p>
-                    <button
-                        type="button"
-                        onClick={() => navigate("/offers")}
-                        style={{
-                            marginTop: "0.5rem",
-                            padding: "0.4rem 0.9rem",
-                            borderRadius: 999,
-                            border: "none",
-                            background: "#3b82f6",
-                            color: "#ffffff",
-                            cursor: "pointer",
-                            fontSize: "0.9rem",
-                        }}
-                    >
-                        Go to my offers
-                    </button>
-                </div>
-            )}
-
-            {!loading && offers.length > 0 && (
+            {!loading && !error && (
                 <>
-                    <div
-                        style={{
-                            marginBottom: "1.5rem",
-                            padding: "0.75rem 1rem",
-                            borderRadius: 8,
-                            border: "1px solid #e5e7eb",
-                            backgroundColor: "#f9fafb",
-                        }}
-                    >
-                        <p
-                            style={{
-                                marginTop: 0,
-                                marginBottom: "0.5rem",
-                                fontSize: "0.9rem",
-                                fontWeight: 500,
-                            }}
-                        >
-                            Select offers to compare:
-                        </p>
+                    {/* selection area */}
+                    <div style={{ marginBottom: "1.5rem" }}>
+                        <h2 style={{ fontSize: "1rem", marginBottom: "0.6rem" }}>
+                            {hasOffers
+                                ? "Select offers to compare"
+                                : "You do not have any offers yet"}
+                        </h2>
 
                         <div
                             style={{
                                 display: "flex",
                                 flexWrap: "wrap",
-                                gap: "0.75rem",
+                                gap: "0.5rem",
                             }}
                         >
-                            {offers.map((offer) => {
-                                const checked = selectedIds.includes(offer.id);
-                                return (
-                                    <label
-                                        key={offer.id}
+                            {!hasOffers && (
+                                <p style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+                                    Start by creating at least one offer in the system. Click{" "}
+                                    <button
+                                        type="button"
+                                        onClick={handleGoToAddOffer}
                                         style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "0.4rem",
-                                            padding: "0.35rem 0.7rem",
-                                            borderRadius: 999,
-                                            border: checked
-                                                ? "1px solid #3b82f6"
-                                                : "1px solid #d1d5db",
-                                            backgroundColor: checked ? "#eff6ff" : "#ffffff",
+                                            border: "none",
+                                            background: "none",
+                                            color: "#2563eb",
                                             cursor: "pointer",
-                                            fontSize: "0.85rem",
+                                            textDecoration: "underline",
+                                            padding: 0,
+                                            fontSize: "0.9rem",
                                         }}
                                     >
-                                        <input
-                                            type="checkbox"
-                                            checked={checked}
-                                            onChange={(e) => handleToggle(e, offer.id)}
-                                        />
-                                        <span>
-                                            {offer.company} – {offer.title}
-                                        </span>
-                                    </label>
-                                );
-                            })}
+                                        here
+                                    </button>{" "}
+                                    to add your first offer.
+                                </p>
+                            )}
+
+                            {hasOffers &&
+                                offers.map((offer) => {
+                                    const checked = selectedIds.includes(offer.id);
+                                    return (
+                                        <label
+                                            key={offer.id}
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "0.4rem",
+                                                padding: "0.35rem 0.7rem",
+                                                borderRadius: 999,
+                                                border: checked
+                                                    ? "1px solid #3b82f6"
+                                                    : "1px solid #d1d5db",
+                                                backgroundColor: checked ? "#eff6ff" : "#ffffff",
+                                                cursor: "pointer",
+                                                fontSize: "0.85rem",
+                                            }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={checked}
+                                                onChange={(e) => handleToggle(e, offer.id)}
+                                            />
+                                            <span>
+                                                {offer.company} – {offer.title}
+                                            </span>
+                                        </label>
+                                    );
+                                })}
                         </div>
                     </div>
 
-                    {selectedOffers.length > 0 && (
+                    {/* weights controls – רק אם יש הצעות */}
+                    {hasOffers && (
+                        <div
+                            style={{
+                                marginBottom: "1.5rem",
+                                padding: "1rem",
+                                borderRadius: 8,
+                                border: "1px solid #e5e7eb",
+                                backgroundColor: "#ffffff",
+                            }}
+                        >
+                            <h2 style={{ fontSize: "1rem", marginBottom: "0.75rem" }}>
+                                What matters most to you?
+                            </h2>
+                            <p
+                                style={{
+                                    fontSize: "0.85rem",
+                                    color: "#6b7280",
+                                    marginBottom: "0.75rem",
+                                }}
+                            >
+                                Adjust the sliders to change how much each factor affects the
+                                score.
+                            </p>
+
+                            <div style={{ display: "grid", gap: "0.75rem" }}>
+                                <label style={{ fontSize: "0.85rem" }}>
+                                    Salary ({Math.round(weights.salary * 100)}%)
+                                    <input
+                                        type="range"
+                                        min={0}
+                                        max={100}
+                                        value={weights.salary * 100}
+                                        onChange={(e) => {
+                                            const value = Number(e.target.value) / 100;
+                                            const rest = 1 - value;
+                                            setWeights({
+                                                salary: value,
+                                                workMode: rest * 0.6,
+                                                location: rest * 0.4,
+                                            });
+                                        }}
+                                        style={{ width: "100%" }}
+                                    />
+                                </label>
+
+                                <label style={{ fontSize: "0.85rem" }}>
+                                    Work mode ({Math.round(weights.workMode * 100)}%)
+                                    <input
+                                        type="range"
+                                        min={0}
+                                        max={100}
+                                        value={weights.workMode * 100}
+                                        onChange={(e) => {
+                                            const value = Number(e.target.value) / 100;
+                                            const rest = 1 - value;
+                                            setWeights({
+                                                salary: rest * 0.6,
+                                                workMode: value,
+                                                location: rest * 0.4,
+                                            });
+                                        }}
+                                        style={{ width: "100%" }}
+                                    />
+                                </label>
+
+                                <label style={{ fontSize: "0.85rem" }}>
+                                    Location ({Math.round(weights.location * 100)}%)
+                                    <input
+                                        type="range"
+                                        min={0}
+                                        max={100}
+                                        value={weights.location * 100}
+                                        onChange={(e) => {
+                                            const value = Number(e.target.value) / 100;
+                                            const rest = 1 - value;
+                                            setWeights({
+                                                salary: rest * 0.6,
+                                                workMode: rest * 0.25,
+                                                location: value,
+                                            });
+                                        }}
+                                        style={{ width: "100%" }}
+                                    />
+                                </label>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={handleResetWeights}
+                                style={{
+                                    marginTop: "0.75rem",
+                                    padding: "0.4rem 0.9rem",
+                                    borderRadius: 999,
+                                    border: "1px solid #d1d5db",
+                                    backgroundColor: "#f9fafb",
+                                    fontSize: "0.8rem",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Reset to default weights
+                            </button>
+                        </div>
+                    )}
+
+                    {/* best offer summary */}
+                    {hasOffers && selectedOffers.length > 0 && (
                         <BestOfferSummary
                             offers={selectedOffers}
                             computeScore={computeScore}
                         />
                     )}
 
-                    {selectedOffers.length > 0 ? (
-                        <div
-                            style={{
-                                overflowX: "auto",
-                                borderRadius: 8,
-                                border: "1px solid #e5e7eb",
-                            }}
-                        >
-                            <table
-                                style={{
-                                    width: "100%",
-                                    borderCollapse: "collapse",
-                                    minWidth: 600,
-                                }}
-                            >
-                                <thead>
-                                    <tr
-                                        style={{
-                                            backgroundColor: "#f3f4f6",
-                                            textAlign: "left",
-                                            fontSize: "0.85rem",
-                                        }}
-                                    >
-                                        <th style={{ padding: "0.6rem 0.75rem" }}>Company</th>
-                                        <th style={{ padding: "0.6rem 0.75rem" }}>Title</th>
-                                        <th style={{ padding: "0.6rem 0.75rem" }}>Salary</th>
-                                        <th style={{ padding: "0.6rem 0.75rem" }}>Location</th>
-                                        <th style={{ padding: "0.6rem 0.75rem" }}>Work mode</th>
-                                        <th style={{ padding: "0.6rem 0.75rem" }}>Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {selectedOffers.map((offer) => (
-                                        <tr key={offer.id} style={{ fontSize: "0.9rem" }}>
-                                            <td style={{ padding: "0.5rem 0.75rem" }}>
-                                                {offer.company}
-                                            </td>
-                                            <td style={{ padding: "0.5rem 0.75rem" }}>
-                                                {offer.title}
-                                            </td>
-                                            <td style={{ padding: "0.5rem 0.75rem" }}>
-                                                {offer.salary
-                                                    ? `${offer.salary.toLocaleString()} ₪`
-                                                    : "-"}
-                                            </td>
-                                            <td style={{ padding: "0.5rem 0.75rem" }}>
-                                                {offer.location || "-"}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    padding: "0.5rem 0.75rem",
-                                                    textTransform: "capitalize",
-                                                }}
-                                            >
-                                                {offer.workMode}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    padding: "0.5rem 0.75rem",
-                                                    fontWeight: 600,
-                                                    color: "#1d4ed8",
-                                                }}
-                                            >
-                                                {computeScore(offer)}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <p>Select at least one offer to see the comparison table.</p>
+                    {/* comparison table placeholder */}
+                    {hasOffers && (
+                        <>
+                            {selectedOffers.length > 0 ? (
+                                <div
+                                    style={{
+                                        overflowX: "auto",
+                                        borderRadius: 8,
+                                        border: "1px solid #e5e7eb",
+                                        backgroundColor: "#ffffff",
+                                        marginTop: "1.25rem",
+                                        padding: "1rem",
+                                        fontSize: "0.9rem",
+                                    }}
+                                >
+                                    <p>
+                                        Here you can render your detailed comparison table (salary,
+                                        work mode, location, score, etc.).
+                                    </p>
+                                </div>
+                            ) : (
+                                <p style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+                                    Select at least one offer to see the comparison table.
+                                </p>
+                            )}
+                        </>
                     )}
                 </>
             )}
-        </section>
+        </div>
     );
 };
 
