@@ -10,52 +10,55 @@ export interface OfferPayload {
     notes?: string;
 }
 
-// GET /offers – get all offers of logged user
+// Get all offers for the logged-in user
 export function getMyOffers(token: string): Promise<Offer[]> {
-    return apiFetch<Offer[]>("/api/offers", {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+    return apiFetch("/api/offers", {
+        headers: { Authorization: `Bearer ${token}` },
     });
 }
 
-// POST /offers – create a new offer
-export function createOffer(token: string, payload: OfferPayload): Promise<Offer> {
-    return apiFetch<Offer>("/api/offers", {
+// Create new offer
+export function createOffer(
+    token: string,
+    payload: OfferPayload
+): Promise<Offer> {
+    return apiFetch("/api/offers", {
         method: "POST",
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
     });
 }
 
-// PUT /offers/:id – update an existing offer
-export function updateOffer(token: string, id: string, payload: OfferPayload): Promise<Offer> {
-    return apiFetch<Offer>(`/api/offers/${id}`, {
+// Update offer by id
+export function updateOffer(
+    token: string,
+    id: string,
+    payload: OfferPayload
+): Promise<Offer> {
+    return apiFetch(`/api/offers/${id}`, {
         method: "PUT",
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
     });
 }
 
-// DELETE /offers/:id
-export function deleteOffer(token: string, id: string): Promise<{ message: string }> {
-    return apiFetch<{ message: string }>(`/api/offers/${id}`, {
+// Delete offer
+export function deleteOffer(
+    token: string,
+    id: string
+): Promise<{ message: string }> {
+    return apiFetch(`/api/offers/${id}`, {
         method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
     });
 }
 
-// GET /offers/:id – get a single offer
-export function getOfferById(token: string, id: string): Promise<Offer> {
-    return apiFetch<Offer>(`/api/offers/${id}`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+// Get single offer by id
+export function getOfferById(
+    token: string,
+    id: string
+): Promise<Offer> {
+    return apiFetch(`/api/offers/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
     });
 }

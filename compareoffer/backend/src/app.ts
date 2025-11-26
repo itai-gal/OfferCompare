@@ -1,13 +1,22 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, {
+    type Application,
+    type Request,
+    type Response,
+    type NextFunction,
+} from "express";
 import cors from "cors";
 import morgan from "morgan";
+import { connectDb } from "./config/db";
 import authRoutes from "./routes/auth.routes";
 import offerRoutes from "./routes/offer.routes";
 
-export function createApp() {
+export function createApp(): Application {
     const app = express();
 
-    // Basic middlewares
+    // Connect to MongoDB
+    connectDb();
+
+    // Middlewares
     app.use(express.json());
     app.use(
         cors({
@@ -19,17 +28,17 @@ export function createApp() {
 
     // Health check
     app.get("/api/health", (_req: Request, res: Response) => {
-        res.json({ status: "ok", service: "CompareOffer API (basic)" });
+        res.json({ status: "ok", service: "CompareOffer API" });
     });
 
-    // Auth routes (register, login, me)
+    // Auth routes: /api/auth/...
     app.use("/api/auth", authRoutes);
 
-    // Offer routes
+    // Offer routes: /api/offers/...
     app.use("/api/offers", offerRoutes);
 
-    // 404 handler for unknown /api routes
-    app.use("/api", (_req: Request, res: Response) => {
+    // 404 handler
+    app.use((req: Request, res: Response) => {
         res.status(404).json({ message: "Route not found" });
     });
 
@@ -37,10 +46,8 @@ export function createApp() {
     app.use(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (err: any, _req: Request, res: Response, _next: NextFunction) => {
-            console.error(err);
-            res.status(err.status || 500).json({
-                message: err.message || "Internal server error",
-            });
+            console.error("Unhandled error:", err);
+            res.status(500).json({ message: "Internal server error" });
         }
     );
 

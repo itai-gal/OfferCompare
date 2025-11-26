@@ -1,35 +1,29 @@
 import { Router } from "express";
+import { auth } from "../middleware/auth.middleware";
 import {
-    createOfferHandler,
-    getMyOffersHandler,
-    getOfferByIdHandler,
-    updateOfferHandler,
-    deleteOfferHandler,
+    getMyOffers,
+    getOfferById,
+    createOffer,
+    updateOffer,
+    deleteOffer,
 } from "../controllers/offer.controller";
-import { authMiddleware } from "../middleware/auth.middleware";
-import {
-    validateCreateOffer,
-    validateUpdateOffer,
-} from "../validations/offer.validation";
+
 
 const router = Router();
 
-// All routes require auth
-router.use(authMiddleware);
-
-// POST /api/offers
-router.post("/", validateCreateOffer, createOfferHandler);
-
 // GET /api/offers
-router.get("/", getMyOffersHandler);
+router.get("/", auth, getMyOffers);
 
 // GET /api/offers/:id
-router.get("/:id", getOfferByIdHandler);
+router.get("/:id", auth, getOfferById);
+
+// POST /api/offers
+router.post("/", auth, createOffer);
 
 // PUT /api/offers/:id
-router.put("/:id", validateUpdateOffer, updateOfferHandler);
+router.put("/:id", auth, updateOffer);
 
 // DELETE /api/offers/:id
-router.delete("/:id", deleteOfferHandler);
+router.delete("/:id", auth, deleteOffer);
 
 export default router;

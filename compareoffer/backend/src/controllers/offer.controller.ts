@@ -1,113 +1,186 @@
-import { Response, NextFunction } from "express";
-import * as offerService from "../services/offer.service";
-import { AuthRequest } from "../middleware/auth.middleware";
+import type { Request, Response } from "express";
+import type { AuthenticatedRequest } from "../middleware/auth.middleware";
+import { Offer, type IOffer } from "../models/offer.model";
 
-export const createOfferHandler = async (
-    req: AuthRequest,
-    res: Response,
-    next: NextFunction
-) => {
+/**
+ * GET /api/offers
+ * Get all offers for the logged-in user.
+ */
+export const getMyOffers = async (req: AuthenticatedRequest, res: Response) => {
     try {
         if (!req.user) {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const offer = await offerService.createOffer(req.user.id, req.body);
-        res.status(201).json(offer);
-    } catch (error) {
-        next(error);
+        const offers = await Offer.find({ userId: req.user.id }).sort({
+            createdAt: -1,
+        });
+
+        return res.json(
+            offers.map((offer: IOffer) => ({
+                id: offer._id.toString(),
+                company: offer.company,
+                title: offer.title,
+                salary: offer.salary,
+                location: offer.location,
+                workMode: offer.workMode,
+                notes: offer.notes,
+                createdAt: offer.createdAt,
+                updatedAt: offer.updatedAt,
+            }))
+        );
+    } catch (err) {
+        console.error("getMyOffers error:", err);
+        return res.status(500).json({ message: "Failed to load offers" });
     }
 };
 
-export const getMyOffersHandler = async (
-    req: AuthRequest,
-    res: Response,
-    next: NextFunction
+/**
+ * GET /api/offers/:id
+ */
+export const getOfferById = async (
+    req: AuthenticatedRequest,
+    res: Response
 ) => {
     try {
         if (!req.user) {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const offers = await offerService.getUserOffers(req.user.id);
-        res.status(200).json(offers);
-    } catch (error) {
-        next(error);
+        const { id } = req.params;
+
+        const offer = await Offer.findOne({ _id: id, userId: req.user.id });
+
+        if (!offer) {
+            return res.status(404).json({ message: "Offer not found" });
+        }
+
+        return res.json({
+            id: offer._id.toString(),
+            company: offer.company,
+            title: offer.title,
+            salary: offer.salary,
+            location: offer.location,
+            workMode: offer.workMode,
+            notes: offer.notes,
+            createdAt: offer.createdAt,
+            updatedAt: offer.updatedAt,
+        });
+    } catch (err) {
+        console.error("getOfferById error:", err);
+        return res.status(500).json({ message: "Failed to load offer" });
     }
 };
 
-export const getOfferByIdHandler = async (
-    req: AuthRequest,
-    res: Response,
-    next: NextFunction
+/**
+ * POST /api/offers
+ */
+export const createOffer = async (
+    req: AuthenticatedRequest,
+    res: Response
 ) => {
     try {
         if (!req.user) {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const offer = await offerService.getOfferById(
-            req.user.id,
-            req.params.id as string
+        const { company, title, salary, location, workMode, notes } = req.body;
+
+        const offer = await Offer.create({
+            userId: req.user.id,
+            company,
+            title,
+            salary,
+            location,
+            workMode,
+            notes,
+        });
+
+        return res.status(201).json({
+            id: offer._id.toString(),
+            company: offer.company,
+            title: offer.title,
+            salary: offer.salary,
+            location: offer.location,
+            workMode: offer.workMode,
+            notes: offer.notes,
+            createdAt: offer.createdAt,
+            updatedAt: offer.updatedAt,
+        });
+    } catch (err) {
+        console.error("createOffer error:", err);
+        return res.status(500).json({ message: "Failed to create offer" });
+    }
+};
+
+/**
+ * PUT /api/offers/:id
+ */
+export const updateOffer = async (
+    req: AuthenticatedRequest,
+    res: Response
+) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { id } = req.params;
+        const { company, title, salary, location, workMode, notes } = req.body;
+
+        const offer = await Offer.findOneAndUpdate(
+            { _id: id, userId: req.user.id },
+            { company, title, salary, location, workMode, notes },
+            { new: true }
         );
 
         if (!offer) {
             return res.status(404).json({ message: "Offer not found" });
         }
 
-        res.status(200).json(offer);
-    } catch (error) {
-        next(error);
+        return res.json({
+            id: offer._id.toString(),
+            company: offer.company,
+            title: offer.title,
+            salary: offer.salary,
+            location: offer.location,
+            workMode: offer.workMode,
+            notes: offer.notes,
+            createdAt: offer.createdAt,
+            updatedAt: offer.updatedAt,
+        });
+    } catch (err) {
+        console.error("updateOffer error:", err);
+        return res.status(500).json({ message: "Failed to update offer" });
     }
 };
 
-export const updateOfferHandler = async (
-    req: AuthRequest,
-    res: Response,
-    next: NextFunction
+/**
+ * DELETE /api/offers/:id
+ */
+export const deleteOffer = async (
+    req: AuthenticatedRequest,
+    res: Response
 ) => {
     try {
         if (!req.user) {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const offer = await offerService.updateOffer(
-            req.user.id,
-            req.params.id as string,
-            req.body
-        );
+        const { id } = req.params;
+
+        const offer = await Offer.findOneAndDelete({
+            _id: id,
+            userId: req.user.id,
+        });
 
         if (!offer) {
             return res.status(404).json({ message: "Offer not found" });
         }
 
-        res.status(200).json(offer);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const deleteOfferHandler = async (
-    req: AuthRequest,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        if (!req.user) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
-        const deleted = await offerService.deleteOffer(
-            req.user.id,
-            req.params.id as string
-        );
-
-        if (!deleted) {
-            return res.status(404).json({ message: "Offer not found" });
-        }
-
-        res.status(200).json({ message: "Offer deleted successfully" });
-    } catch (error) {
-        next(error);
+        return res.json({ message: "Offer deleted" });
+    } catch (err) {
+        console.error("deleteOffer error:", err);
+        return res.status(500).json({ message: "Failed to delete offer" });
     }
 };

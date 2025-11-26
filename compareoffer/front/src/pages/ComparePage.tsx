@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getMyOffers } from "../services/offerService";
+import BestOfferSummary from "../components/BestOfferSummary";
+import { useNavigate } from "react-router-dom";
 import type { Offer } from "../types";
 import type { ChangeEvent } from "react";
-import { useNavigate } from "react-router-dom";
 
 const ComparePage = () => {
     const { token, loading: authLoading } = useAuth();
@@ -14,7 +15,6 @@ const ComparePage = () => {
 
     const navigate = useNavigate();
 
-    // load offers when user + token are ready
     useEffect(() => {
         if (!token) {
             setLoading(false);
@@ -24,7 +24,6 @@ const ComparePage = () => {
         getMyOffers(token)
             .then((data) => {
                 setOffers(data);
-                // auto-select up to 3 first offers if available
                 setSelectedIds(data.slice(0, 3).map((o) => o.id));
             })
             .catch((err: any) => {
@@ -47,20 +46,16 @@ const ComparePage = () => {
         [offers, selectedIds]
     );
 
-    // simple scoring function just to make it a bit interesting
     const computeScore = (offer: Offer): number => {
         let score = 0;
 
         if (offer.salary) {
-            // salary weight
-            score += offer.salary / 1000; // e.g. 25k ≈ 25 pts
+            score += offer.salary / 1000;
         }
 
-        // work mode bonus
         if (offer.workMode === "remote") score += 10;
         if (offer.workMode === "hybrid") score += 6;
 
-        // small bonus if notes exist
         if (offer.notes && offer.notes.length > 0) score += 2;
 
         return Math.round(score * 10) / 10;
@@ -128,7 +123,6 @@ const ComparePage = () => {
 
             {!loading && offers.length > 0 && (
                 <>
-                    {/* selection pills */}
                     <div
                         style={{
                             marginBottom: "1.5rem",
@@ -189,7 +183,13 @@ const ComparePage = () => {
                         </div>
                     </div>
 
-                    {/* comparison table */}
+                    {selectedOffers.length > 0 && (
+                        <BestOfferSummary
+                            offers={selectedOffers}
+                            computeScore={computeScore}
+                        />
+                    )}
+
                     {selectedOffers.length > 0 ? (
                         <div
                             style={{

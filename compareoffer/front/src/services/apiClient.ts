@@ -1,36 +1,47 @@
-// Automatically sends JSON, parses JSON, and throws errors.
+const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000";
+
+type ApiErrorShape = {
+    message?: string;
+    error?: string;
+};
 
 export async function apiFetch<T>(
-    url: string,
+    path: string,
     options: RequestInit = {}
 ): Promise<T> {
-    const baseUrl = "http://localhost:5000";
+    const { method, headers, body } = options;
 
-    const config: RequestInit = {
-        ...options,
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+        method: method ?? "GET",
         headers: {
             "Content-Type": "application/json",
-            ...(options.headers || {}),
+            ...(headers ?? {}),
         },
-    };
+        body,
+    });
 
-    const response = await fetch(baseUrl + url, config);
+    const text = await response.text();
+    let data: unknown = null;
 
-    // Parse JSON always
-    const data = await response.json().catch(() => null);
+    if (text) {
+        try {
+            data = JSON.parse(text);
+        } catch {
+            data = text;
+        }
+    }
 
-    // Handle non-OK responses
     if (!response.ok) {
-        const message = data?.message || "Request failed";
-        const details = data?.details || null;
+        const payload = data as ApiErrorShape | string | null;
+        const message =
+            typeof payload === "string"
+                ? payload
+                : payload?.message ||
+                payload?.error ||
+                `Request failed with ${response.status}`;
 
-        const error = {
-            message,
-            details,
-            status: response.status,
-        };
-
-        throw error;
+        throw new Error(message);
     }
 
     return data as T;

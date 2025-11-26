@@ -1,16 +1,12 @@
 import mongoose from "mongoose";
 import { env } from "./env";
 
-/**
- * Connects to MongoDB using Mongoose.
- */
-export async function connectToDatabase() {
+export async function connectDb(): Promise<void> {
     try {
         await mongoose.connect(env.mongoUri);
-        console.log("✅ Connected to MongoDB");
+        console.log("📦 MongoDB connected");
     } catch (error) {
-        console.error("❌ Failed to connect to MongoDB");
-        console.error(error);
+        console.error("❌ Failed to connect to MongoDB:", error);
         process.exit(1);
     }
 }

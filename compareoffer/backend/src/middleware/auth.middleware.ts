@@ -1,43 +1,59 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 
-export interface AuthRequest extends Request {
-    user?: {
-        id: string;
-        email: string;
-        role: string;
-    };
+interface JwtPayload {
+    id: string;
+    email: string;
+    role?: string;
 }
 
-export const authMiddleware = (
-    req: AuthRequest,
+// Extend Express Request to include user
+export interface AuthenticatedRequest extends Request {
+    user?: JwtPayload;
+}
+
+export const auth = (
+    req: AuthenticatedRequest,
     res: Response,
     next: NextFunction
 ) => {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ message: "Missing or invalid token" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
     try {
-        const decoded = jwt.verify(token, env.jwtSecret) as {
-            id: string;
-            email: string;
-            role: string;
-        };
+        const authHeader = req.header("Authorization");
+        const tokenHeader = req.header("x-auth-token");
 
-        req.user = {
-            id: decoded.id,
-            email: decoded.email,
-            role: decoded.role,
-        };
+        let token = "";
 
+        // Support "Authorization: Bearer <token>"
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        } else if (tokenHeader) {
+            // Also support "x-auth-token: <token>" (for Postman / old clients)
+            token = tokenHeader;
+        }
+
+        if (!token) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+
+        const decoded = jwt.verify(token, env.jwtSecret) as JwtPayload;
+
+        req.user = decoded;
         next();
-    } catch (error) {
+    } catch (err) {
+        console.error("Auth middleware error:", err);
         return res.status(401).json({ message: "Invalid or expired token" });
     }
+};
+
+export const requireAdmin = (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+) => {
+    if (!req.user || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access required" });
+    }
+
+    next();
 };
