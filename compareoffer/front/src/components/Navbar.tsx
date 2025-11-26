@@ -4,6 +4,11 @@ import { useAuth } from "../context/AuthContext";
 const Navbar = () => {
     const { isAuthenticated, user, logout } = useAuth();
 
+    const firstName =
+        user?.name && user.name.trim().length > 0
+            ? user.name.trim().split(" ")[0]
+            : "";
+
     return (
         <header
             style={{
@@ -90,9 +95,11 @@ const Navbar = () => {
                 )}
 
                 {isAuthenticated && (
-                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                    <div
+                        style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}
+                    >
                         <span style={{ fontSize: "0.9rem", color: "#555" }}>
-                            Hi, {user?.firstName}
+                            Hi{firstName ? `, ${firstName}` : ""} 👋
                         </span>
                         <button
                             type="button"

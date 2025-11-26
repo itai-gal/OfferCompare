@@ -155,17 +155,6 @@ const HomePage = () => {
                         <h2 style={{ fontSize: "1.1rem", marginBottom: "0.4rem" }}>
                             To start comparing, please log in or create an account
                         </h2>
-                        <p
-                            style={{
-                                fontSize: "0.9rem",
-                                color: "#6b7280",
-                                marginBottom: "0.8rem",
-                                maxWidth: 520,
-                            }}
-                        >
-                            You need an account so we can save your offers securely and show
-                            them only to you.
-                        </p>
                         <div style={{ display: "flex", gap: "0.75rem" }}>
                             <button
                                 type="button"
