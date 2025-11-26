@@ -1,6 +1,9 @@
 import { Link, NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
+    const { isAuthenticated, user, logout } = useAuth();
+
     return (
         <header
             style={{
@@ -21,7 +24,13 @@ const Navbar = () => {
                 </span>
             </Link>
 
-            <nav style={{ display: "flex", gap: "1rem" }}>
+            <nav
+                style={{
+                    display: "flex",
+                    gap: "1rem",
+                    alignItems: "center",
+                }}
+            >
                 <NavLink
                     to="/"
                     style={({ isActive }) => ({
@@ -32,6 +41,7 @@ const Navbar = () => {
                 >
                     Home
                 </NavLink>
+
                 <NavLink
                     to="/compare"
                     style={({ isActive }) => ({
@@ -42,6 +52,7 @@ const Navbar = () => {
                 >
                     Compare
                 </NavLink>
+
                 <NavLink
                     to="/about"
                     style={({ isActive }) => ({
@@ -52,6 +63,50 @@ const Navbar = () => {
                 >
                     About
                 </NavLink>
+
+                {!isAuthenticated && (
+                    <>
+                        <NavLink
+                            to="/login"
+                            style={({ isActive }) => ({
+                                textDecoration: "none",
+                                color: isActive ? "#3b82f6" : "#333",
+                                fontWeight: isActive ? 600 : 400,
+                            })}
+                        >
+                            Login
+                        </NavLink>
+                        <NavLink
+                            to="/register"
+                            style={({ isActive }) => ({
+                                textDecoration: "none",
+                                color: isActive ? "#3b82f6" : "#333",
+                                fontWeight: isActive ? 600 : 400,
+                            })}
+                        >
+                            Register
+                        </NavLink>
+                    </>
+                )}
+
+                {isAuthenticated && (
+                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                        <span style={{ fontSize: "0.9rem", color: "#555" }}>
+                            Hi, {user?.firstName}
+                        </span>
+                        <button
+                            type="button"
+                            onClick={logout}
+                            style={{
+                                padding: "0.25rem 0.75rem",
+                                fontSize: "0.85rem",
+                                cursor: "pointer",
+                            }}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                )}
             </nav>
         </header>
     );
