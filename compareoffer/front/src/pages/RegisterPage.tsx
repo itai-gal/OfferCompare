@@ -2,164 +2,135 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import type { RegisterPayload } from "../types";
+import { useToast } from "../context/ToastContext";
 
 const RegisterPage = () => {
-    const { register, loading } = useAuth();
+    const { register } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
 
-    const [form, setForm] = useState<RegisterPayload>({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-    });
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const [error, setError] = useState<string | null>(null);
-    const [validationDetails, setValidationDetails] = useState<string[]>([]);
+    const [submitting, setSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = async (e: FormEvent) => {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        setError(null);
-        setValidationDetails([]);
+
+        setErrorMessage(null);
+        setSubmitting(true);
 
         try {
-            await register(form);
+            await register({ firstName, lastName, email, password });
+            showToast("Account created successfully. Welcome!", "success");
             navigate("/compare");
-        } catch (err: any) {
-            setError(err?.message || "Registration failed");
-            if (Array.isArray(err?.details)) {
-                setValidationDetails(err.details);
-            }
+        } catch (error) {
+            setErrorMessage(
+                "Registration failed. Please check your details and try again."
+            );
+            showToast("Registration failed. Please try again.", "error");
+        } finally {
+            setSubmitting(false);
         }
-    };
+    }
 
     return (
-        <section style={{ maxWidth: 450, margin: "0 auto" }}>
-            <h1>Register</h1>
-            <p style={{ fontSize: "0.9rem", color: "#555" }}>
-                Create an account to manage and compare all your job offers in one place.
-            </p>
+        <main className="page">
+            <div className="form-card">
+                <h1 className="form-title">Create your CompareOffer account</h1>
+                <p className="form-subtitle">
+                    Keep all your offers in one place and make a clearer decision about your next role.
+                </p>
 
-            {error && (
-                <div
-                    style={{
-                        marginTop: "1rem",
-                        padding: "0.5rem 0.75rem",
-                        borderRadius: 4,
-                        backgroundColor: "#fee2e2",
-                        color: "#991b1b",
-                        fontSize: "0.85rem",
-                    }}
-                >
-                    {error}
-                    {validationDetails.length > 0 && (
-                        <ul style={{ marginTop: "0.5rem", paddingLeft: "1.25rem" }}>
-                            {validationDetails.map((msg, idx) => (
-                                <li key={idx}>{msg}</li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-            )}
+                {errorMessage && (
+                    <div className="form-global-error">{errorMessage}</div>
+                )}
 
-            <form onSubmit={handleSubmit} style={{ marginTop: "1rem" }}>
-                <div style={{ marginBottom: "0.75rem" }}>
-                    <label
-                        htmlFor="firstName"
-                        style={{ display: "block", marginBottom: 4 }}
-                    >
-                        First name
-                    </label>
-                    <input
-                        id="firstName"
-                        name="firstName"
-                        type="text"
-                        value={form.firstName}
-                        onChange={handleChange}
-                        required
-                        style={{ width: "100%", padding: "0.5rem" }}
-                    />
-                </div>
+                <form onSubmit={handleSubmit} className="form-grid">
+                    <div className="form-field">
+                        <label className="form-label" htmlFor="firstName">
+                            First name
+                        </label>
+                        <input
+                            id="firstName"
+                            className="form-input"
+                            type="text"
+                            required
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            placeholder="Itai"
+                        />
+                    </div>
 
-                <div style={{ marginBottom: "0.75rem" }}>
-                    <label
-                        htmlFor="lastName"
-                        style={{ display: "block", marginBottom: 4 }}
-                    >
-                        Last name
-                    </label>
-                    <input
-                        id="lastName"
-                        name="lastName"
-                        type="text"
-                        value={form.lastName}
-                        onChange={handleChange}
-                        required
-                        style={{ width: "100%", padding: "0.5rem" }}
-                    />
-                </div>
+                    <div className="form-field">
+                        <label className="form-label" htmlFor="lastName">
+                            Last name
+                        </label>
+                        <input
+                            id="lastName"
+                            className="form-input"
+                            type="text"
+                            required
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            placeholder="Gal"
+                        />
+                    </div>
 
-                <div style={{ marginBottom: "0.75rem" }}>
-                    <label
-                        htmlFor="email"
-                        style={{ display: "block", marginBottom: 4 }}
-                    >
-                        Email
-                    </label>
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={form.email}
-                        onChange={handleChange}
-                        required
-                        style={{ width: "100%", padding: "0.5rem" }}
-                    />
-                </div>
+                    <div className="form-field">
+                        <label className="form-label" htmlFor="email">
+                            Email
+                        </label>
+                        <input
+                            id="email"
+                            className="form-input"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="you@example.com"
+                        />
+                    </div>
 
-                <div style={{ marginBottom: "0.75rem" }}>
-                    <label
-                        htmlFor="password"
-                        style={{ display: "block", marginBottom: 4 }}
-                    >
-                        Password
-                    </label>
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={form.password}
-                        onChange={handleChange}
-                        required
-                        style={{ width: "100%", padding: "0.5rem" }}
-                    />
-                </div>
+                    <div className="form-field">
+                        <label className="form-label" htmlFor="password">
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            className="form-input"
+                            type="password"
+                            autoComplete="new-password"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Choose a strong password"
+                        />
+                    </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                        marginTop: "0.5rem",
-                        padding: "0.5rem 1rem",
-                        cursor: loading ? "not-allowed" : "pointer",
-                    }}
-                >
-                    {loading ? "Registering..." : "Register"}
-                </button>
-            </form>
+                    <div className="form-actions">
+                        <button
+                            type="submit"
+                            className="btn-primary"
+                            disabled={submitting}
+                        >
+                            {submitting ? "Creating account..." : "Create account"}
+                        </button>
+                    </div>
+                </form>
 
-            <p style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
-                Already have an account? <Link to="/login">Login here</Link>
-            </p>
-        </section>
+                <p className="form-hint">
+                    Already have an account?{" "}
+                    <Link to="/login">
+                        Sign in
+                    </Link>
+                </p>
+            </div>
+        </main>
     );
 };
 

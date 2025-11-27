@@ -4,6 +4,12 @@ import { useAuth } from "../context/AuthContext";
 const Navbar = () => {
     const { isAuthenticated, user, logout } = useAuth();
 
+    // Try to get a name:
+    const displayName =
+        (user?.firstName && user.firstName.trim()) ||
+        (user?.name && user.name.trim().split(" ")[0]) ||
+        null;
+
     return (
         <header className="navbar">
             <div className="navbar-inner">
@@ -39,6 +45,7 @@ const Navbar = () => {
                         About
                     </NavLink>
 
+                    {/* ======= CASE 1: NOT AUTHENTICATED ======= */}
                     {!isAuthenticated && (
                         <>
                             <NavLink
@@ -61,14 +68,16 @@ const Navbar = () => {
                         </>
                     )}
 
+                    {/* ======= CASE 2 + 3: AUTHENTICATED ======= */}
                     {isAuthenticated && (
                         <div className="navbar-user">
-                            <span>
-                                Hi,{" "}
-                                {user?.firstName && user?.lastName
-                                    ? `${user.firstName} ${user.lastName}`
-                                    : user?.firstName || "there"}
-                            </span>
+                            {/* Show Hi only if we actually have a name */}
+                            {displayName && (
+                                <span>
+                                    Hi, {displayName}
+                                </span>
+                            )}
+
                             <button
                                 type="button"
                                 onClick={logout}

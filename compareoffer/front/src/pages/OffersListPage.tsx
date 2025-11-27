@@ -1,16 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { getMyOffers, deleteOffer } from "../services/offerService";
 import type { Offer } from "../types";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { getMyOffers, deleteOffer } from "../services/offerService";
+
+const formatSalary = (salary?: number | null): string => {
+    if (!salary || salary <= 0) return "-";
+    return `₪${salary.toLocaleString("he-IL")}`;
+};
 
 const OffersListPage = () => {
     const { token } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
 
     const [offers, setOffers] = useState<Offer[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!token) return;
@@ -22,7 +30,8 @@ const OffersListPage = () => {
             .then((data) => {
                 setOffers(data);
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error(err);
                 setError("Failed to load your offers.");
             })
             .finally(() => {
@@ -30,27 +39,35 @@ const OffersListPage = () => {
             });
     }, [token]);
 
-    const handleAddOffer = () => {
+    const handleGoToAddOffer = () => {
         navigate("/offers/new");
     };
 
-    const handleBackToCompare = () => {
+    const handleGoToCompare = () => {
         navigate("/compare");
     };
 
     const handleDelete = async (id: string) => {
-        if (!token) return;
+        if (!token) {
+            showToast("You must be logged in to delete offers.", "error");
+            return;
+        }
 
-        const confirmDelete = window.confirm(
+        const confirmed = window.confirm(
             "Are you sure you want to delete this offer?"
         );
-        if (!confirmDelete) return;
+        if (!confirmed) return;
 
         try {
+            setDeletingId(id);
             await deleteOffer(token, id);
             setOffers((prev) => prev.filter((o) => o.id !== id));
-        } catch {
-            alert("Failed to delete offer.");
+            showToast("Offer deleted.", "success");
+        } catch (err) {
+            console.error(err);
+            showToast("Failed to delete offer.", "error");
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -60,66 +77,40 @@ const OffersListPage = () => {
 
     if (!token) {
         return (
-            <main style={{ maxWidth: 900, margin: "2rem auto", padding: "1rem" }}>
-                <h1>My offers</h1>
-                <p>Please log in to see your offers.</p>
+            <main className="page-container">
+                <h1 className="page-title">My offers</h1>
+                <p>You must be logged in to see your offers.</p>
             </main>
         );
     }
 
+    const hasOffers = offers.length > 0;
+
     return (
-        <main style={{ maxWidth: 1000, margin: "2rem auto", padding: "1rem" }}>
-            {/* header row */}
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "1.5rem",
-                    gap: "1rem",
-                }}
-            >
+        <main className="page-container">
+            <div className="page-header-row">
                 <div>
-                    <h1 style={{ marginBottom: "0.4rem" }}>My offers</h1>
-                    <p style={{ fontSize: "0.95rem", color: "#4b5563" }}>
-                        All the job offers you saved in one place.
+                    <h1 className="page-title">My offers</h1>
+                    <p className="page-subtitle">
+                        All the offers you added are listed here. You can edit, delete, or go
+                        to the compare view.
                     </p>
                 </div>
 
-                <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                     <button
                         type="button"
-                        onClick={handleAddOffer}
-                        style={{
-                            padding: "0.6rem 1.2rem",
-                            borderRadius: 999,
-                            border: "none",
-                            backgroundColor: "#3b82f6",
-                            color: "#ffffff",
-                            fontWeight: 500,
-                            fontSize: "0.9rem",
-                            cursor: "pointer",
-                            whiteSpace: "nowrap",
-                        }}
-                    >
-                        + Add a new offer
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={handleBackToCompare}
-                        style={{
-                            padding: "0.6rem 1.2rem",
-                            borderRadius: 999,
-                            border: "1px solid #d1d5db",
-                            backgroundColor: "#ffffff",
-                            color: "#111827",
-                            fontSize: "0.9rem",
-                            cursor: "pointer",
-                            whiteSpace: "nowrap",
-                        }}
+                        onClick={handleGoToCompare}
+                        className="btn-secondary"
                     >
                         Back to compare
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleGoToAddOffer}
+                        className="btn-primary"
+                    >
+                        + Add a new offer
                     </button>
                 </div>
             </div>
@@ -127,137 +118,160 @@ const OffersListPage = () => {
             {loading && <p>Loading your offers...</p>}
 
             {!loading && error && (
-                <p style={{ color: "red", marginBottom: "1rem", fontSize: "0.9rem" }}>
-                    {error}
-                </p>
+                <p style={{ color: "red", marginTop: "0.75rem" }}>{error}</p>
             )}
 
-            {!loading && !error && offers.length === 0 && (
-                <p style={{ fontSize: "0.9rem", color: "#6b7280" }}>
-                    You don’t have any offers yet. Click{" "}
+            {!loading && !error && !hasOffers && (
+                <div className="card" style={{ marginTop: "1rem" }}>
+                    <p style={{ marginBottom: "0.5rem" }}>
+                        You do not have any offers yet.
+                    </p>
                     <button
                         type="button"
-                        onClick={handleAddOffer}
-                        style={{
-                            border: "none",
-                            background: "none",
-                            color: "#2563eb",
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            padding: 0,
-                            fontSize: "0.9rem",
-                        }}
+                        onClick={handleGoToAddOffer}
+                        className="btn-primary"
                     >
-                        here
-                    </button>{" "}
-                    to add your first offer.
-                </p>
+                        Add your first offer
+                    </button>
+                </div>
             )}
 
-            {!loading && !error && offers.length > 0 && (
+            {!loading && !error && hasOffers && (
                 <div
+                    className="card"
                     style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
-                        gap: "1rem",
+                        marginTop: "1rem",
+                        padding: "0.75rem 0.75rem",
                     }}
                 >
-                    {offers.map((offer) => (
-                        <article
-                            key={offer.id}
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                                "minmax(120px, 2fr) minmax(120px, 2fr) 100px 130px 130px",
+                            columnGap: "0.75rem",
+                            rowGap: "0.5rem",
+                            fontSize: "0.85rem",
+                        }}
+                    >
+                        <div
                             style={{
-                                backgroundColor: "#ffffff",
-                                borderRadius: 10,
-                                border: "1px solid #e5e7eb",
-                                padding: "1rem",
-                                boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "0.4rem",
+                                fontWeight: 600,
+                                color: "#4b5563",
                             }}
                         >
-                            <header>
-                                <h2
+                            Company
+                        </div>
+                        <div
+                            style={{
+                                fontWeight: 600,
+                                color: "#4b5563",
+                            }}
+                        >
+                            Title
+                        </div>
+                        <div
+                            style={{
+                                fontWeight: 600,
+                                color: "#4b5563",
+                            }}
+                        >
+                            Salary
+                        </div>
+                        <div
+                            style={{
+                                fontWeight: 600,
+                                color: "#4b5563",
+                            }}
+                        >
+                            Work mode
+                        </div>
+                        <div />
+
+                        {offers.map((offer) => (
+                            <div
+                                key={offer.id}
+                                style={{
+                                    borderTop: "1px solid #e5e7eb",
+                                    paddingTop: "0.45rem",
+                                    display: "contents",
+                                }}
+                            >
+                                <div
                                     style={{
-                                        fontSize: "1rem",
-                                        fontWeight: 600,
-                                        marginBottom: "0.15rem",
+                                        paddingTop: "0.45rem",
+                                        paddingBottom: "0.45rem",
                                     }}
                                 >
-                                    {offer.company}
-                                </h2>
-                                <p
+                                    <div style={{ fontWeight: 500 }}>
+                                        {offer.company}
+                                    </div>
+                                    <div
+                                        style={{
+                                            fontSize: "0.8rem",
+                                            color: "#6b7280",
+                                        }}
+                                    >
+                                        {offer.location || "-"}
+                                    </div>
+                                </div>
+
+                                <div
                                     style={{
-                                        fontSize: "0.9rem",
-                                        color: "#4b5563",
+                                        paddingTop: "0.45rem",
+                                        paddingBottom: "0.45rem",
                                     }}
                                 >
                                     {offer.title}
-                                </p>
-                            </header>
+                                </div>
 
-                            <p style={{ fontSize: "0.85rem", color: "#6b7280" }}>
-                                Salary:{" "}
-                                {offer.salary ? `₪${offer.salary.toLocaleString()}` : "N/A"}
-                            </p>
-                            <p style={{ fontSize: "0.85rem", color: "#6b7280" }}>
-                                Location: {offer.location || "N/A"}
-                            </p>
-                            <p style={{ fontSize: "0.85rem", color: "#6b7280" }}>
-                                Work mode: {offer.workMode}
-                            </p>
-
-                            {offer.notes && (
-                                <p
+                                <div
                                     style={{
-                                        fontSize: "0.8rem",
-                                        color: "#4b5563",
-                                        marginTop: "0.25rem",
+                                        paddingTop: "0.45rem",
+                                        paddingBottom: "0.45rem",
                                     }}
                                 >
-                                    {offer.notes}
-                                </p>
-                            )}
+                                    {formatSalary(offer.salary)}
+                                </div>
 
-                            <div
-                                style={{
-                                    marginTop: "0.6rem",
-                                    display: "flex",
-                                    gap: "0.4rem",
-                                }}
-                            >
-                                <button
-                                    type="button"
-                                    onClick={() => handleEdit(offer.id)}
+                                <div
                                     style={{
-                                        padding: "0.35rem 0.9rem",
-                                        borderRadius: 999,
-                                        border: "1px solid #d1d5db",
-                                        backgroundColor: "#f9fafb",
-                                        fontSize: "0.8rem",
-                                        cursor: "pointer",
+                                        paddingTop: "0.45rem",
+                                        paddingBottom: "0.45rem",
+                                        textTransform: "capitalize",
                                     }}
                                 >
-                                    Edit
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleDelete(offer.id)}
+                                    {offer.workMode}
+                                </div>
+
+                                <div
                                     style={{
-                                        padding: "0.35rem 0.9rem",
-                                        borderRadius: 999,
-                                        border: "1px solid #fee2e2",
-                                        backgroundColor: "#fef2f2",
-                                        color: "#b91c1c",
-                                        fontSize: "0.8rem",
-                                        cursor: "pointer",
+                                        paddingTop: "0.3rem",
+                                        paddingBottom: "0.3rem",
+                                        display: "flex",
+                                        gap: "0.4rem",
+                                        justifyContent: "flex-end",
                                     }}
                                 >
-                                    Delete
-                                </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleEdit(offer.id)}
+                                        className="btn-small-secondary"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete(offer.id)}
+                                        className="btn-small-danger"
+                                        disabled={deletingId === offer.id}
+                                    >
+                                        {deletingId === offer.id ? "Deleting..." : "Delete"}
+                                    </button>
+                                </div>
                             </div>
-                        </article>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
         </main>
