@@ -119,7 +119,7 @@ const HomePage = () => {
                             fontSize: "0.95rem",
                         }}
                     >
-                        Get started
+                        Let's Compare
                     </button>
 
                     <button
@@ -135,7 +135,7 @@ const HomePage = () => {
                             fontSize: "0.9rem",
                         }}
                     >
-                        Add an offer
+                        Add an offer ➕
                     </button>
                 </div>
             </section>
