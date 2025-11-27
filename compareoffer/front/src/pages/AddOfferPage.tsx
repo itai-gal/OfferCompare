@@ -140,7 +140,9 @@ const AddOfferPage = () => {
                         <select
                             className="form-input"
                             value={workMode}
-                            onChange={(e) => setWorkMode(e.target.value as Offer["workMode"])}
+                            onChange={(e) =>
+                                setWorkMode(e.target.value as Offer["workMode"])
+                            }
                         >
                             <option value="onsite">On-site</option>
                             <option value="hybrid">Hybrid</option>
@@ -171,14 +173,14 @@ const AddOfferPage = () => {
                     <button
                         type="button"
                         onClick={handleCancel}
-                        className="btn-secondary"
+                        className="btn btn-secondary"
                         disabled={submitting}
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
-                        className="btn-primary"
+                        className="btn btn-primary"
                         disabled={submitting}
                     >
                         {submitting ? "Saving..." : "Save offer"}

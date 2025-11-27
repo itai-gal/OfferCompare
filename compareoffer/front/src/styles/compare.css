@@ -1,0 +1,155 @@
+.page {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+/* header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.page-header-main {
+    max-width: 600px;
+}
+
+.page-header-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.page-subtitle {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+}
+
+/* small helpers for compare */
+.compare-section {
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+}
+
+.compare-tip {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background-color: var(--color-primary-light);
+    border: 1px solid #bfdbfe;
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+}
+
+.text-muted {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.text-error {
+    font-size: 0.9rem;
+    color: #dc2626;
+}
+
+/* offer tags */
+.compare-tags-wrapper {
+    margin-top: 0.5rem;
+}
+
+.compare-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.compare-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius-full);
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.compare-tag-checked {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary-light);
+}
+
+/* sliders box */
+.compare-weights {
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background-color: #ffffff;
+}
+
+.compare-weights-sliders {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.slider-label {
+    font-size: 0.85rem;
+}
+
+.slider-label input[type="range"] {
+    width: 100%;
+}
+
+/* comparison table */
+.compare-table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background-color: #ffffff;
+}
+
+.compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.compare-table th,
+.compare-table td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+}
+
+.compare-table th {
+    background-color: #f9fafb;
+    font-weight: 500;
+}
+
+.compare-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* link-like button */
+.link-button {
+    border: none;
+    background: none;
+    color: #2563eb;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
