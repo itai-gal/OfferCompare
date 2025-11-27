@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyOffers } from "../services/offerService";
 import type { Offer } from "../types";
@@ -51,6 +52,7 @@ const ComparePage = () => {
 
     useEffect(() => {
         if (!token) return;
+
         setLoading(true);
         setError(null);
 
@@ -85,7 +87,7 @@ const ComparePage = () => {
     }
 
     function handleToggle(
-        e: React.ChangeEvent<HTMLInputElement>,
+        e: ChangeEvent<HTMLInputElement>,
         offerId: string
     ) {
         const checked = e.target.checked;
@@ -100,6 +102,10 @@ const ComparePage = () => {
 
     const handleGoToAddOffer = () => {
         navigate("/offers/new");
+    };
+
+    const handleGoToOffersList = () => {
+        navigate("/offers");
     };
 
     if (!token) {
@@ -130,35 +136,52 @@ const ComparePage = () => {
                         Compare your offers
                     </h1>
 
-                    {/* show subtitle only when there are offers */}
                     {!loading && !error && hasOffers && (
                         <p style={{ color: "#4b5563", fontSize: "0.95rem" }}>
-                            Select the offers you want to compare and see which one fits you
-                            best.
+                            Select the offers you want to compare and see which one fits you best.
                         </p>
                     )}
                 </div>
 
-                <button
-                    type="button"
-                    onClick={handleGoToAddOffer}
-                    style={{
-                        padding: "0.6rem 1.2rem",
-                        borderRadius: 999,
-                        border: "none",
-                        background: "#3b82f6",
-                        color: "#ffffff",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        fontSize: "0.9rem",
-                        whiteSpace: "nowrap",
-                    }}
-                >
-                    + Add a new offer
-                </button>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                        type="button"
+                        onClick={handleGoToAddOffer}
+                        style={{
+                            padding: "0.6rem 1.2rem",
+                            borderRadius: 999,
+                            border: "none",
+                            background: "#3b82f6",
+                            color: "#ffffff",
+                            fontWeight: 500,
+                            cursor: "pointer",
+                            fontSize: "0.9rem",
+                            whiteSpace: "nowrap",
+                        }}
+                    >
+                        + Add a new offer
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={handleGoToOffersList}
+                        style={{
+                            padding: "0.6rem 1.2rem",
+                            borderRadius: 999,
+                            border: "1px solid #d1d5db",
+                            background: "#ffffff",
+                            color: "#111827",
+                            fontSize: "0.9rem",
+                            cursor: "pointer",
+                            whiteSpace: "nowrap",
+                        }}
+                    >
+                        View my offers
+                    </button>
+                </div>
             </div>
 
-            {/* tip – only if there are offers */}
+            {/* tip – only when there are offers */}
             {!loading && !error && hasOffers && (
                 <div
                     style={{
@@ -170,12 +193,12 @@ const ComparePage = () => {
                         marginBottom: "1.25rem",
                     }}
                 >
-                    <strong>Tip:</strong> Focus on the offers you are seriously
-                    considering. You can always add or remove offers later.
+                    <strong>Tip:</strong> Focus on the offers you are seriously considering.
+                    You can always add or remove offers later.
                 </div>
             )}
 
-            {/* error – רק אם באמת יש כשל תקשורת, בלי קשר למצב של offers */}
+            {/* error message if loading failed */}
             {!loading && error && (
                 <p style={{ color: "red", marginBottom: "1rem", fontSize: "0.9rem" }}>
                     {error}
@@ -257,7 +280,7 @@ const ComparePage = () => {
                         </div>
                     </div>
 
-                    {/* weights controls – רק אם יש הצעות */}
+                    {/* weights controls – only if there are offers */}
                     {hasOffers && (
                         <div
                             style={{

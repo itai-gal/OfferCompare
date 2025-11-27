@@ -46,7 +46,7 @@ const BestOfferSummary = ({ offers, computeScore }: BestOfferSummaryProps) => {
             >
                 Best offer right now:{" "}
                 <span style={{ fontWeight: 700 }}>
-                    {best.company} – {best.title}
+                    {best.company}- {best.title}
                 </span>
             </h2>
 
