@@ -15,92 +15,39 @@ const OfferComparisonTable = ({
     if (offers.length === 0) return null;
 
     return (
-        <div
-            style={{
-                overflowX: "auto",
-                borderRadius: 8,
-                border: "1px solid #e5e7eb",
-                backgroundColor: "#ffffff",
-                marginTop: "1.25rem",
-            }}
-        >
-            <table
-                style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    minWidth: 600,
-                }}
-            >
+        <div className="comparison-table-wrapper">
+            <table className="comparison-table">
                 <thead>
-                    <tr
-                        style={{
-                            backgroundColor: "#f3f4f6",
-                            borderBottom: "1px solid #e5e7eb",
-                        }}
-                    >
-                        <th
-                            style={{
-                                textAlign: "left",
-                                padding: "0.8rem",
-                                fontSize: "0.85rem",
-                                color: "#6b7280",
-                                width: "160px",
-                            }}
-                        >
+                    <tr className="comparison-table-header-row">
+                        <th className="comparison-table-criteria-header">
                             Criteria
                         </th>
                         {offers.map((offer) => (
                             <th
                                 key={offer.id}
-                                style={{
-                                    textAlign: "left",
-                                    padding: "0.8rem",
-                                    fontSize: "0.9rem",
-                                }}
+                                className="comparison-table-offer-header"
                             >
-                                <div
-                                    style={{
-                                        fontWeight: 600,
-                                        marginBottom: "0.15rem",
-                                    }}
-                                >
+                                <div className="comparison-table-offer-company">
                                     {offer.company}
                                 </div>
-                                <div
-                                    style={{
-                                        fontSize: "0.8rem",
-                                        color: "#6b7280",
-                                    }}
-                                >
+                                <div className="comparison-table-offer-title">
                                     {offer.title}
                                 </div>
                             </th>
                         ))}
                     </tr>
                 </thead>
+
                 <tbody>
                     {/* Salary row */}
-                    <tr
-                        style={{
-                            borderBottom: "1px solid #e5e7eb",
-                        }}
-                    >
-                        <td
-                            style={{
-                                padding: "0.7rem 0.8rem",
-                                fontSize: "0.85rem",
-                                color: "#374151",
-                            }}
-                        >
+                    <tr className="comparison-table-row">
+                        <td className="comparison-table-criteria-cell">
                             Salary (gross)
                         </td>
                         {offers.map((offer) => (
                             <td
                                 key={offer.id}
-                                style={{
-                                    padding: "0.7rem 0.8rem",
-                                    fontSize: "0.9rem",
-                                }}
+                                className="comparison-table-cell"
                             >
                                 {offer.salary
                                     ? `₪${offer.salary.toLocaleString("he-IL")}`
@@ -110,27 +57,14 @@ const OfferComparisonTable = ({
                     </tr>
 
                     {/* Location row */}
-                    <tr
-                        style={{
-                            borderBottom: "1px solid #e5e7eb",
-                        }}
-                    >
-                        <td
-                            style={{
-                                padding: "0.7rem 0.8rem",
-                                fontSize: "0.85rem",
-                                color: "#374151",
-                            }}
-                        >
+                    <tr className="comparison-table-row">
+                        <td className="comparison-table-criteria-cell">
                             Location
                         </td>
                         {offers.map((offer) => (
                             <td
                                 key={offer.id}
-                                style={{
-                                    padding: "0.7rem 0.8rem",
-                                    fontSize: "0.9rem",
-                                }}
+                                className="comparison-table-cell"
                             >
                                 {offer.location || "—"}
                             </td>
@@ -138,27 +72,14 @@ const OfferComparisonTable = ({
                     </tr>
 
                     {/* Work mode row */}
-                    <tr
-                        style={{
-                            borderBottom: "1px solid #e5e7eb",
-                        }}
-                    >
-                        <td
-                            style={{
-                                padding: "0.7rem 0.8rem",
-                                fontSize: "0.85rem",
-                                color: "#374151",
-                            }}
-                        >
+                    <tr className="comparison-table-row">
+                        <td className="comparison-table-criteria-cell">
                             Work mode
                         </td>
                         {offers.map((offer) => (
                             <td
                                 key={offer.id}
-                                style={{
-                                    padding: "0.7rem 0.8rem",
-                                    fontSize: "0.9rem",
-                                }}
+                                className="comparison-table-cell"
                             >
                                 {getWorkModeLabel(offer.workMode)}
                             </td>
@@ -167,14 +88,7 @@ const OfferComparisonTable = ({
 
                     {/* Score row */}
                     <tr>
-                        <td
-                            style={{
-                                padding: "0.8rem",
-                                fontSize: "0.85rem",
-                                color: "#111827",
-                                fontWeight: 600,
-                            }}
-                        >
+                        <td className="comparison-table-criteria-cell comparison-table-score-label">
                             Overall score
                         </td>
                         {offers.map((offer) => {
@@ -184,25 +98,16 @@ const OfferComparisonTable = ({
                             return (
                                 <td
                                     key={offer.id}
-                                    style={{
-                                        padding: "0.8rem",
-                                        fontSize: "0.9rem",
-                                        fontWeight: isBest ? 700 : 500,
-                                        backgroundColor: isBest
-                                            ? "#ecfdf5"
-                                            : "transparent",
-                                        color: isBest ? "#166534" : "#111827",
-                                        borderLeft: "1px solid #e5e7eb",
-                                    }}
+                                    className={
+                                        "comparison-table-cell comparison-table-score-cell" +
+                                        (isBest
+                                            ? " comparison-table-score-cell-best"
+                                            : "")
+                                    }
                                 >
                                     {score.toFixed(2)}
                                     {isBest && (
-                                        <span
-                                            style={{
-                                                marginLeft: "0.4rem",
-                                                fontSize: "0.8rem",
-                                            }}
-                                        >
+                                        <span className="comparison-table-score-best-badge">
                                             (best)
                                         </span>
                                     )}

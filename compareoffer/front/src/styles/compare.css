@@ -153,3 +153,191 @@
     font-size: 0.9rem;
     text-decoration: underline;
 }
+
+.best-offer {
+    margin-bottom: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #dbeafe;
+    background-color: #eff6ff;
+}
+
+.best-offer-label {
+    margin: 0;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
+.best-offer-title {
+    margin: 0.2rem 0 0.3rem;
+    font-size: 1rem;
+}
+
+.best-offer-highlight {
+    font-weight: 700;
+}
+
+.best-offer-score {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.best-offer-score span {
+    font-weight: 600;
+    color: #1d4ed8;
+}
+
+.best-offer-description {
+    margin: 0.3rem 0 0;
+    font-size: 0.85rem;
+    color: #4b5563;
+}
+
+.offer-card {
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+.offer-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.offer-card-company {
+    margin: 0;
+}
+
+.offer-card-title {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.offer-card-tag {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    text-transform: capitalize;
+}
+
+.offer-card-row {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+}
+
+.offer-card-row-muted {
+    margin-top: 0.1rem;
+    color: #4b5563;
+}
+
+.offer-card-notes {
+    margin: 0.4rem 0 0;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.offer-card-actions {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.comparison-table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    margin-top: 1.25rem;
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.comparison-table-header-row {
+    background-color: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.comparison-table th,
+.comparison-table td {
+    border-left: 1px solid #e5e7eb;
+}
+
+.comparison-table th:first-child,
+.comparison-table td:first-child {
+    border-left: none;
+}
+
+.comparison-table-criteria-header {
+    text-align: left;
+    padding: 0.8rem;
+    font-size: 0.85rem;
+    color: #6b7280;
+    width: 160px;
+}
+
+.comparison-table-offer-header {
+    text-align: left;
+    padding: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.comparison-table-offer-company {
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+}
+
+.comparison-table-offer-title {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.comparison-table-row {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.comparison-table-criteria-cell {
+    padding: 0.7rem 0.8rem;
+    font-size: 0.85rem;
+    color: #374151;
+}
+
+.comparison-table-score-label {
+    font-weight: 600;
+    color: #111827;
+    padding: 0.8rem;
+}
+
+.comparison-table-cell {
+    padding: 0.7rem 0.8rem;
+    font-size: 0.9rem;
+}
+
+.comparison-table-score-cell {
+    padding: 0.8rem;
+}
+
+.comparison-table-score-cell-best {
+    font-weight: 700;
+    background-color: #ecfdf5;
+    color: #166534;
+}
+
+.comparison-table-score-best-badge {
+    margin-left: 0.4rem;
+    font-size: 0.8rem;
+}

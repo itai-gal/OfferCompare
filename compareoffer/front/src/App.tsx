@@ -14,8 +14,7 @@ function App() {
   return (
     <div className="app">
       <Navbar />
-
-      <main style={{ padding: "1rem 2rem" }}>
+      <main className="app-main">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/compare" element={<ComparePage />} />
@@ -28,7 +27,6 @@ function App() {
           <Route path="*" element={<div>Page not found</div>} />
         </Routes>
       </main>
-
       <Footer />
     </div>
   );

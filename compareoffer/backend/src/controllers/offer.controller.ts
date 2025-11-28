@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import type { AuthenticatedRequest } from "../middleware/auth.middleware";
 import { Offer, type IOffer } from "../models/offer.model";
 
@@ -29,8 +29,7 @@ export const getMyOffers = async (req: AuthenticatedRequest, res: Response) => {
                 updatedAt: offer.updatedAt,
             }))
         );
-    } catch (err) {
-        console.error("getMyOffers error:", err);
+    } catch {
         return res.status(500).json({ message: "Failed to load offers" });
     }
 };
@@ -66,8 +65,7 @@ export const getOfferById = async (
             createdAt: offer.createdAt,
             updatedAt: offer.updatedAt,
         });
-    } catch (err) {
-        console.error("getOfferById error:", err);
+    } catch {
         return res.status(500).json({ message: "Failed to load offer" });
     }
 };
@@ -107,8 +105,7 @@ export const createOffer = async (
             createdAt: offer.createdAt,
             updatedAt: offer.updatedAt,
         });
-    } catch (err) {
-        console.error("createOffer error:", err);
+    } catch {
         return res.status(500).json({ message: "Failed to create offer" });
     }
 };
@@ -149,8 +146,7 @@ export const updateOffer = async (
             createdAt: offer.createdAt,
             updatedAt: offer.updatedAt,
         });
-    } catch (err) {
-        console.error("updateOffer error:", err);
+    } catch {
         return res.status(500).json({ message: "Failed to update offer" });
     }
 };
@@ -179,8 +175,7 @@ export const deleteOffer = async (
         }
 
         return res.json({ message: "Offer deleted" });
-    } catch (err) {
-        console.error("deleteOffer error:", err);
+    } catch {
         return res.status(500).json({ message: "Failed to delete offer" });
     }
 };

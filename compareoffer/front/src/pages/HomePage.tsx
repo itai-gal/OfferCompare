@@ -55,7 +55,6 @@ const demoOffers: DemoOffer[] = [
     },
 ];
 
-
 function getWorkModeLabel(mode: DemoOffer["workMode"]) {
     if (mode === "remote") return "Remote";
     if (mode === "hybrid") return "Hybrid";
@@ -79,7 +78,6 @@ const HomePage = () => {
         if (isAuthenticated) {
             navigate("/offers/new");
         } else {
-            // if not authenticated, show the auth prompt
             setShowAuthPrompt(true);
         }
     };
@@ -91,38 +89,53 @@ const HomePage = () => {
         <main className="container">
             {/* hero */}
             <section className="hero">
-                <h1 className="hero-title">Compare your job offers with a clear head</h1>
+                <h1 className="hero-title">
+                    Compare your job offers with a clear head
+                </h1>
 
-                <p
-                    className="hero-subtitle"
-                    style={{ marginTop: "0.75rem", marginBottom: "0.25rem" }}
-                >
+                <p className="hero-subtitle hero-subtitle-spaced">
                     Keep all your offers in one place, see them side by side, and get a
                     simple view that helps you choose your next role with confidence.
                 </p>
 
-                <div className="hero-buttons">
-                    <button type="button" className="btn btn-primary" onClick={handleGetStarted}>
+                <div className="hero-buttons btn-group">
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleGetStarted}
+                    >
                         Let&apos;s compare
                     </button>
 
-                    <button type="button" className="btn btn-secondary" onClick={handleAddOffer}>
+                    <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={handleAddOffer}
+                    >
                         Add an offer
                     </button>
                 </div>
 
-                {/* auth prompt – when not authenticated click "Let's compare" or "Add an offer" */}
+                {/* auth prompt – when not authenticated */}
                 {!isAuthenticated && showAuthPrompt && (
-                    <div className="card auth-prompt" style={{ marginTop: "1rem" }}>
-                        <p style={{ marginBottom: "0.75rem", fontSize: "0.9rem" }}>
+                    <div className="card auth-prompt">
+                        <p className="auth-prompt-text">
                             To start comparing, create a free account or log in to your
                             existing one.
                         </p>
-                        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                            <button type="button" className="btn btn-primary" onClick={goToRegister}>
+                        <div className="auth-prompt-actions">
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={goToRegister}
+                            >
                                 Create account
                             </button>
-                            <button type="button" className="btn btn-secondary" onClick={goToLogin}>
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={goToLogin}
+                            >
                                 I already have an account
                             </button>
                         </div>
@@ -132,7 +145,9 @@ const HomePage = () => {
 
             {/* demo section */}
             <section>
-                <h2 className="offers-section-title">Example of how your offers might look</h2>
+                <h2 className="offers-section-title">
+                    Example of how your offers might look
+                </h2>
                 <p className="offers-section-subtitle">
                     These are sample offers. In the real app you will see your own offers
                     here, saved from your job search.
@@ -142,8 +157,7 @@ const HomePage = () => {
                     {demoOffers.map((offer) => (
                         <article
                             key={`${offer.company}-${offer.title}`}
-                            className="card"
-                            style={{ padding: "0.9rem 1rem" }}
+                            className="card card-demo-offer"
                         >
                             <header className="offer-card-header">
                                 <h3 className="offer-card-title">{offer.company}</h3>

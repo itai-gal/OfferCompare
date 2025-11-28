@@ -14,6 +14,11 @@
     line-height: 1.5;
 }
 
+.hero-subtitle-spaced {
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
 .hero-buttons {
     margin-top: 1.2rem;
     display: flex;
@@ -71,4 +76,54 @@
 .offer-card-details dt,
 .offer-card-details dd {
     margin: 0;
+}
+
+.about-page {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem;
+    line-height: 1.6;
+}
+
+.about-section {
+    margin-bottom: 2rem;
+}
+
+.about-text {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 1rem;
+}
+
+.about-heading {
+    font-size: 1.4rem;
+    margin-bottom: 0.7rem;
+    font-weight: 600;
+}
+
+.about-list {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    padding-left: 1.2rem;
+}
+
+.about-list li {
+    margin-bottom: 0.6rem;
+}
+
+.about-footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.about-footer-text {
+    margin-bottom: 0.25rem;
+    color: #374151;
+}
+
+.about-footer-author {
+    font-weight: 600;
+    color: #111827;
 }

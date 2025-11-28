@@ -26,12 +26,14 @@ const OffersListPage = () => {
                 setOffers(data);
             })
             .catch(() => {
-                setError("Failed to load your offers. Please try again.");
+                const msg = "Failed to load your offers. Please try again.";
+                setError(msg);
+                showToast(msg, "error");
             })
             .finally(() => {
                 setLoading(false);
             });
-    }, [token]);
+    }, [token, showToast]);
 
     const handleAddOffer = () => {
         navigate("/offers/new");
@@ -53,8 +55,7 @@ const OffersListPage = () => {
             await deleteOffer(token, id);
             setOffers((prev) => prev.filter((o) => o.id !== id));
             showToast("Offer deleted successfully", "success");
-        } catch (err) {
-            console.error(err);
+        } catch {
             showToast("Failed to delete offer", "error");
         }
     };
@@ -90,10 +91,10 @@ const OffersListPage = () => {
                     </p>
                 </div>
 
-                <div className="page-header-actions">
+                <div className="page-header-actions btn-group">
                     <button
                         type="button"
-                        className="btn btn-secondary small"
+                        className="btn btn-secondary"
                         onClick={handleBackToCompare}
                     >
                         Back to compare
@@ -101,7 +102,7 @@ const OffersListPage = () => {
 
                     <button
                         type="button"
-                        className="btn btn-primary small"
+                        className="btn btn-primary"
                         onClick={handleAddOffer}
                     >
                         + Add a new offer
@@ -110,14 +111,8 @@ const OffersListPage = () => {
             </div>
 
             {/* search box */}
-            <div style={{ marginBottom: "1rem" }}>
-                <label
-                    style={{
-                        display: "block",
-                        fontSize: "0.85rem",
-                        marginBottom: "0.25rem",
-                    }}
-                >
+            <div className="offers-search">
+                <label className="offers-search-label">
                     Search by company, title or location
                 </label>
                 <input
@@ -132,7 +127,7 @@ const OffersListPage = () => {
             {loading && <p className="text-muted">Loading your offers...</p>}
 
             {!loading && error && (
-                <p className="text-error" style={{ marginBottom: "1rem" }}>
+                <p className="text-error mb-1">
                     {error}
                 </p>
             )}
@@ -150,65 +145,43 @@ const OffersListPage = () => {
                             No offers match your search. Try a different keyword.
                         </p>
                     ) : (
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                                gap: "1rem",
-                            }}
-                        >
+                        <div className="offers-grid">
                             {filteredOffers.map((offer) => (
-                                <article key={offer.id} className="card">
-                                    <header style={{ marginBottom: "0.5rem" }}>
-                                        <h3 style={{ marginBottom: "0.15rem" }}>{offer.company}</h3>
-                                        <p
-                                            style={{
-                                                fontSize: "0.9rem",
-                                                color: "var(--color-text-secondary)",
-                                            }}
-                                        >
+                                <article key={offer.id} className="card offers-card">
+                                    <header className="offers-card-header">
+                                        <h3 className="offers-card-company">
+                                            {offer.company}
+                                        </h3>
+                                        <p className="offers-card-title">
                                             {offer.title}
                                         </p>
                                     </header>
 
-                                    <p style={{ fontSize: "0.85rem" }}>
+                                    <p className="offers-card-text">
                                         <strong>Salary:</strong>{" "}
-                                        {offer.salary ? `${offer.salary.toLocaleString()} ₪` : "N/A"}
+                                        {offer.salary
+                                            ? `${offer.salary.toLocaleString()} ₪`
+                                            : "N/A"}
                                     </p>
-                                    <p style={{ fontSize: "0.85rem" }}>
-                                        <strong>Location:</strong> {offer.location || "N/A"}
+                                    <p className="offers-card-text">
+                                        <strong>Location:</strong>{" "}
+                                        {offer.location || "N/A"}
                                     </p>
-                                    <p style={{ fontSize: "0.85rem" }}>
+                                    <p className="offers-card-text">
                                         <strong>Work mode:</strong> {offer.workMode}
                                     </p>
 
                                     {offer.notes && (
-                                        <p
-                                            style={{
-                                                fontSize: "0.8rem",
-                                                marginTop: "0.35rem",
-                                                color: "var(--color-text-secondary)",
-                                            }}
-                                        >
+                                        <p className="offers-card-notes">
                                             {offer.notes}
                                         </p>
                                     )}
 
-                                    <div
-                                        style={{
-                                            marginTop: "0.75rem",
-                                            display: "flex",
-                                            justifyContent: "flex-end",
-                                            gap: "0.5rem",
-                                        }}
-                                    >
-                                        {/* feature: button Edit */}
+                                    <div className="offers-card-actions">
                                         <button
                                             type="button"
                                             className="btn btn-secondary small"
-                                            onClick={() =>
-                                                navigate(`/offers/${offer.id}/edit`)
-                                            }
+                                            onClick={() => navigate(`/offers/${offer.id}/edit`)}
                                         >
                                             Edit
                                         </button>

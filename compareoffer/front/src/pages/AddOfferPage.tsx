@@ -45,8 +45,7 @@ const AddOfferPage = () => {
 
             showToast("Offer added successfully.", "success");
             navigate("/offers");
-        } catch (err) {
-            console.error(err);
+        } catch {
             showToast("Failed to add offer. Please try again.", "error");
         } finally {
             setSubmitting(false);
@@ -77,11 +76,7 @@ const AddOfferPage = () => {
                 </div>
             </div>
 
-            <form
-                onSubmit={handleSubmit}
-                className="card"
-                style={{ maxWidth: 550, marginTop: "1rem" }}
-            >
+            <form onSubmit={handleSubmit} className="card offer-form-card">
                 <div className="form-grid">
                     <div className="form-field">
                         <label className="form-label">
@@ -150,7 +145,7 @@ const AddOfferPage = () => {
                         </select>
                     </div>
 
-                    <div className="form-field" style={{ gridColumn: "1 / -1" }}>
+                    <div className="form-field form-field-full">
                         <label className="form-label">Notes</label>
                         <textarea
                             className="form-input"
@@ -162,14 +157,7 @@ const AddOfferPage = () => {
                     </div>
                 </div>
 
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: "0.75rem",
-                        marginTop: "1rem",
-                    }}
-                >
+                <div className="form-actions-right btn-group">
                     <button
                         type="button"
                         onClick={handleCancel}

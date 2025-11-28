@@ -58,8 +58,7 @@ export const registerHandler = async (req: Request, res: Response) => {
                 role: user.role,
             },
         });
-    } catch (err) {
-        console.error("registerHandler error:", err);
+    } catch {
         return res.status(500).json({ message: "Failed to register user" });
     }
 };
@@ -100,8 +99,7 @@ export const loginHandler = async (req: Request, res: Response) => {
                 role: user.role,
             },
         });
-    } catch (err) {
-        console.error("loginHandler error:", err);
+    } catch {
         return res.status(500).json({ message: "Failed to login" });
     }
 };
@@ -137,8 +135,7 @@ export const meHandler = async (req: Request, res: Response) => {
             email: user.email,
             role: user.role,
         });
-    } catch (err) {
-        console.error("meHandler error:", err);
+    } catch {
         return res.status(401).json({ message: "Invalid or expired token" });
     }
 };

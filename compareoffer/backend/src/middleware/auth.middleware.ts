@@ -28,7 +28,7 @@ export const auth = (
         if (authHeader && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
         } else if (tokenHeader) {
-            // Also support "x-auth-token: <token>" (for Postman / old clients)
+            // Also support "x-auth-token: <token>"
             token = tokenHeader;
         }
 
@@ -39,9 +39,8 @@ export const auth = (
         const decoded = jwt.verify(token, env.jwtSecret) as JwtPayload;
 
         req.user = decoded;
-        next();
-    } catch (err) {
-        console.error("Auth middleware error:", err);
+        return next();
+    } catch {
         return res.status(401).json({ message: "Invalid or expired token" });
     }
 };
@@ -55,5 +54,5 @@ export const requireAdmin = (
         return res.status(403).json({ message: "Admin access required" });
     }
 
-    next();
+    return next();
 };

@@ -61,7 +61,7 @@ const RegisterPage = () => {
                             required
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
-                            placeholder="Itai"
+                            placeholder="name here"
                         />
                     </div>
 
@@ -76,7 +76,7 @@ const RegisterPage = () => {
                             required
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
-                            placeholder="Gal"
+                            placeholder="last name here"
                         />
                     </div>
 
@@ -92,7 +92,7 @@ const RegisterPage = () => {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="you@example.com"
+                            placeholder="name@example.com"
                         />
                     </div>
 
@@ -108,7 +108,7 @@ const RegisterPage = () => {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Choose a strong password"
+                            placeholder="password"
                         />
                     </div>
 

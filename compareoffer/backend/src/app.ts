@@ -14,7 +14,7 @@ export function createApp(): Application {
     const app = express();
 
     // Connect to MongoDB
-    connectDb();
+    void connectDb();
 
     // Middlewares
     app.use(express.json());
@@ -42,14 +42,12 @@ export function createApp(): Application {
         res.status(404).json({ message: "Route not found" });
     });
 
-    // Global error handler
-    app.use(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (err: any, _req: Request, res: Response, _next: NextFunction) => {
-            console.error("Unhandled error:", err);
-            res.status(500).json({ message: "Internal server error" });
+    app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+        if (res.headersSent) {
+            return;
         }
-    );
+        res.status(500).json({ message: "Internal server error" });
+    });
 
     return app;
 }

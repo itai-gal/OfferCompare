@@ -11,6 +11,7 @@ import "./styles/home.css";
 import "./styles/toast.css";
 import "./styles/compare.css";
 
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
