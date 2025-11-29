@@ -47,7 +47,6 @@ const AboutPage = () => {
                 <p className="about-footer-text">
                     Designed to help you make smarter career decisions
                 </p>
-                <p className="about-footer-author">by Itai Gal</p>
             </footer>
         </main>
     );

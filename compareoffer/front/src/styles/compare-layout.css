@@ -1,0 +1,209 @@
+.page {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.page-header-main {
+    max-width: 600px;
+}
+
+.page-header-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.page-subtitle {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+}
+
+.compare-section {
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+}
+
+.compare-tip {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background-color: var(--color-primary-light);
+    border: 1px solid #bfdbfe;
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+}
+
+.compare-tags-wrapper {
+    margin-top: 0.5rem;
+}
+
+.compare-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.compare-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius-full);
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.compare-tag-checked {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary-light);
+}
+
+.compare-weights {
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background-color: #ffffff;
+}
+
+.compare-weights-sliders {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.slider-label {
+    font-size: 0.85rem;
+}
+
+.slider-label input[type="range"] {
+    width: 100%;
+}
+
+.link-button {
+    border: none;
+    background: none;
+    color: #2563eb;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+.best-offer {
+    margin-bottom: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #dbeafe;
+    background-color: #eff6ff;
+}
+
+.best-offer-label {
+    margin: 0;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
+.best-offer-title {
+    margin: 0.2rem 0 0.3rem;
+    font-size: 1rem;
+}
+
+.best-offer-highlight {
+    font-weight: 700;
+}
+
+.best-offer-score {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.best-offer-score span {
+    font-weight: 600;
+    color: #1d4ed8;
+}
+
+.best-offer-description {
+    margin: 0.3rem 0 0;
+    font-size: 0.85rem;
+    color: #4b5563;
+}
+
+.offer-card {
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+.offer-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.offer-card-company {
+    margin: 0;
+}
+
+.offer-card-title {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.offer-card-tag {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    text-transform: capitalize;
+}
+
+.offer-card-row {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+}
+
+.offer-card-row-muted {
+    margin-top: 0.1rem;
+    color: #4b5563;
+}
+
+.offer-card-notes {
+    margin: 0.4rem 0 0;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.offer-card-actions {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}

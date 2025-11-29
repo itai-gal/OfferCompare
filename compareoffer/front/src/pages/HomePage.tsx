@@ -109,7 +109,7 @@ const HomePage = () => {
 
                     <button
                         type="button"
-                        className="btn btn-secondary"
+                        className="btn btn-secondary home"
                         onClick={handleAddOffer}
                     >
                         Add an offer
@@ -133,7 +133,7 @@ const HomePage = () => {
                             </button>
                             <button
                                 type="button"
-                                className="btn btn-secondary"
+                                className="btn btn-secondary home"
                                 onClick={goToLogin}
                             >
                                 I already have an account
