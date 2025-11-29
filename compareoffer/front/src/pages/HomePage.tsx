@@ -90,7 +90,7 @@ const HomePage = () => {
             {/* hero */}
             <section className="hero">
                 <h1 className="hero-title">
-                    Compare your job offers with a clear head
+                    <strong>Compare</strong> your job offers with a <strong>clear head</strong>
                 </h1>
 
                 <p className="hero-subtitle hero-subtitle-spaced">

@@ -115,7 +115,7 @@ const RegisterPage = () => {
                     <div className="form-actions">
                         <button
                             type="submit"
-                            className="btn-primary"
+                            className="btn btn-primary"
                             disabled={submitting}
                         >
                             {submitting ? "Creating account..." : "Create account"}

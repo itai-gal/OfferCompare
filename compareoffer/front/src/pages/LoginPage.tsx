@@ -82,7 +82,7 @@ const LoginPage = () => {
                     <div className="form-actions">
                         <button
                             type="submit"
-                            className="btn-primary"
+                            className="btn btn-primary"
                             disabled={submitting}
                         >
                             {submitting ? "Signing in..." : "Sign in"}
