@@ -1,14 +1,21 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 
 const Navbar = () => {
     const { isAuthenticated, user, logout } = useAuth();
+    const { showToast } = useToast();
 
     // Try to get a name:
     const displayName =
         (user?.firstName && user.firstName.trim()) ||
         (user?.name && user.name.trim().split(" ")[0]) ||
         null;
+
+    const handleLogout = () => {
+        logout();
+        showToast("You have been logged out.", "info");
+    };
 
     return (
         <header className="navbar">
@@ -80,7 +87,7 @@ const Navbar = () => {
 
                             <button
                                 type="button"
-                                onClick={logout}
+                                onClick={handleLogout}
                                 className="navbar-logout-btn"
                             >
                                 Logout

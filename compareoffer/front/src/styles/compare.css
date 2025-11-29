@@ -53,16 +53,6 @@
     margin-bottom: 1.25rem;
 }
 
-.text-muted {
-    font-size: 0.9rem;
-    color: #6b7280;
-}
-
-.text-error {
-    font-size: 0.9rem;
-    color: #dc2626;
-}
-
 /* offer tags */
 .compare-tags-wrapper {
     margin-top: 0.5rem;

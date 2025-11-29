@@ -146,7 +146,7 @@ const ComparePage = () => {
                     </button>
                     <button
                         type="button"
-                        className="btn btn-primary new"
+                        className="btn btn-primary"
                         onClick={handleGoToAddOffer}
                     >
                         + Add a new offer
