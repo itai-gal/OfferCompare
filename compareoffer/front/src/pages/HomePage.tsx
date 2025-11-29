@@ -14,14 +14,14 @@ const demoOffers: DemoOffer[] = [
     {
         company: "AppNest",
         title: "Junior Mobile Developer",
-        salary: "₪10,000",
+        salary: "₪9,500",
         location: "Herzliya",
         workMode: "hybrid",
     },
     {
         company: "CloudWorks",
         title: "Junior DevOps Engineer",
-        salary: "₪11,000",
+        salary: "₪12,000",
         location: "Tel Aviv",
         workMode: "hybrid",
     },
@@ -41,7 +41,7 @@ const demoOffers: DemoOffer[] = [
     },
     {
         company: "RoboTest",
-        title: "QA Automation Developer (Entry Level)",
+        title: "QA Automation Developer",
         salary: "₪10,000",
         location: "Tel Aviv",
         workMode: "hybrid",
